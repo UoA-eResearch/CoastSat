@@ -115,7 +115,13 @@
       var div = L.DomUtil.create('div', 'info legend');
       div.innerHTML += "<h4>Trend (m / year)</h4>"
       for (var i = -3; i <= 3; i++) {
-        div.innerHTML += `<i style="background:${cmap(i).css()}"></i>${i}<br>`
+        var prefix = ""
+        if (i == -3) {
+          prefix = "≤ "
+        } else if (i == 3) {
+          prefix = "≥ "
+        }
+        div.innerHTML += `<i style="background:${cmap(i).css()}"></i>${prefix + i}<br>`
       }
       return div;
     };
