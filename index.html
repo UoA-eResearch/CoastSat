@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
   crossorigin=""/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
   crossorigin=""></script>
@@ -20,6 +21,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"
     integrity="sha512-zInFF17qBFVvvvFpIfeBzo7Tj7+rQxLeTJDmbxjBz5/zIr89YVbTNelNhdTT+/DCrxoVzBeUPVFJsczKbB7sew=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   
   <style>
       body,
@@ -97,9 +99,12 @@
           return { r: c[0], g: c[1], b: c[2] };
         },
         click: function (e, feature) {
+          $("#plot").remove()
           if (window.popup) map.closePopup(window.popup)
           var p = feature.properties
-          window.popup = L.popup()
+          var url = `shoreline_data_run6/${p.site_id}/time_series_tidally_corrected.csv`
+
+          window.popup = L.popup({minWidth: 800})
             .setContent(`<b>${p.id}</b><br>
               along_dist: ${p.along_dist?.toFixed(2)}<br>
               along_dist_norm: ${p.along_dist_norm}<br>
@@ -110,9 +115,45 @@
               n_points_nonan: ${p.n_points_nonan}<br>
               orientation: ${p.orientation}<br>
               trend: ${p.trend?.toFixed(2)}<br>
+              site: ${p.site_id}<br>
+              <a href="${url}" target="_blank" class="link">Download time series for ${p.site_id}</a>
+              <div id="plot"></div>
             `)
             .setLatLng(e.latlng)
             .addTo(map);
+          Papa.parse(url, {
+            download: true,
+            header: true,
+            dynamicTyping: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+              console.log(results)
+              var dates = results.data.map(d => d.dates)
+              var values = results.data.map(d => d[p.id])
+              var mean = Plotly.d3.mean(values)
+              values = values.map(v => v ? v - mean : v)
+              console.log(dates,values)
+              var data = [{
+                  type: "scatter",
+                  mode: "markers",
+                  name: "",
+                  x: dates,
+                  y: values,
+                  line: {color: '#17BECF'}
+              }];
+              var layout = {
+                  title: `Time series for ${p.id}`,
+                  xaxis: {
+                      title: "Date/Time"
+                  },
+                  yaxis: {
+                      title: "cross-shore change [m]",
+                      hoverformat: '.1f'
+                  }
+              };
+              Plotly.newPlot("plot", data, layout);
+            }
+          })
         },
         sensitivity: .0001
       });
