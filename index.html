@@ -95,7 +95,25 @@
         color: function(index, feature) {
           var c = cmap(feature.properties.trend).gl()
           return { r: c[0], g: c[1], b: c[2] };
-        }
+        },
+        click: function (e, feature) {
+          if (window.popup) map.closePopup(window.popup)
+          var p = feature.properties
+          window.popup = L.popup()
+            .setContent(`<b>${p.id}</b><br>
+              along_dist: ${p.along_dist?.toFixed(2)}<br>
+              along_dist_norm: ${p.along_dist_norm}<br>
+              beach_slope: ${p.beach_slope}<br>
+              cil: ${p.cil}<br>
+              ciu: ${p.ciu}<br>
+              n_points: ${p.n_points}<br>
+              n_points_nonan: ${p.n_points_nonan}<br>
+              orientation: ${p.orientation}<br>
+              trend: ${p.trend?.toFixed(2)}<br>
+            `)
+            .setLatLng(e.latlng)
+            .addTo(map);
+        },
       });
       map.spin(false);
     });
