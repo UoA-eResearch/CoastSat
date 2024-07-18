@@ -72,8 +72,8 @@
     var baseMaps = {
       "OSM": L.tileLayer.provider("OpenStreetMap.Mapnik"),
       "CartoDB Positron": L.tileLayer.provider('CartoDB.Positron'),
-      "CartoDB Dark Matter": L.tileLayer.provider("CartoDB.DarkMatter").addTo(map),
-      "ESRI WorldImagery": L.tileLayer.provider("Esri.WorldImagery"),
+      "CartoDB Dark Matter": L.tileLayer.provider("CartoDB.DarkMatter"),
+      "ESRI WorldImagery": L.tileLayer.provider("Esri.WorldImagery").addTo(map),
       "Google Hybrid": L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
