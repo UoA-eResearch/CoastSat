@@ -157,6 +157,10 @@
                   }
               };
               Plotly.newPlot("plot", data, layout);
+              var px = map.project(e.latlng);
+              console.log(px)
+              px.y -= 400;
+              map.panTo(map.unproject(px),{animate: true});
             }
           })
         },
