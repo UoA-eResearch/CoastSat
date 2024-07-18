@@ -133,18 +133,19 @@
             skipEmptyLines: true,
             complete: function(results) {
               console.log(results)
-              var dates = results.data.map(d => d.dates)
-              var values = results.data.map(d => d[p.id])
+              var filtered_data = results.data.filter(d => d[p.id])
+              var dates = filtered_data.map(d => d.dates)
+              var values = filtered_data.map(d => d[p.id])
               var mean = Plotly.d3.mean(values)
               values = values.map(v => v ? v - mean : v)
               console.log(dates,values)
               var data = [{
                   type: "scatter",
-                  mode: "markers",
+                  mode: "lines+markers",
                   name: "",
                   x: dates,
                   y: values,
-                  line: {color: '#17BECF'}
+                  //line: {color: '#17BECF'}
               }];
               var layout = {
                   title: `Time series for ${p.id}`,
