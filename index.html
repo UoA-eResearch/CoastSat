@@ -66,7 +66,7 @@
     var map = L.map('map', {
       center: [-42, 172],
       zoom: 6,
-      worldCopyJump: true
+      //worldCopyJump: true
     })
 
     var baseMaps = {
@@ -90,6 +90,11 @@
     map.spin(true);
     $.getJSON("transects.geojson", function (geojson) {
       console.log(geojson)
+      for (var f of geojson.features) {
+        for (var c of f.geometry.coordinates) {
+          if (c[0] < 0) c[0] += 360
+        }
+      }
       L.glify.longitudeFirst()
       L.glify.lines({
         map: map,
