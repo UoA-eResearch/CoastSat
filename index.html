@@ -38,6 +38,7 @@
           padding: 10px;
           background-color: rgba(0, 0, 0, 0.8);
           border-radius: 5px;
+          max-width: 500px;
       }
 
       .legend i {
@@ -193,12 +194,15 @@
         }
         div.innerHTML += `<i style="background:${cmap(i).css()}"></i>${prefix + i}<br>`
       }
+      div.innerHTML += `<div id="attribution">Data provided by K. Vos, M. Harley and K. Splinter (University of New South Wales) as part of their work on shoreline processes;<br>
+<a href="https://www.unsw.edu.au/research/wrl/our-research/coastsat">https://www.unsw.edu.au/research/wrl/our-research/coastsat</a><br>
+For more information about the dataset: <a href="https://zenodo.org/records/7758183">https://zenodo.org/records/7758183</a><br>
+For more information about the technique:<br>
+<a href="https://doi.org/10.1016/j.envsoft.2019.104528">Vos, K., Splinter, K.D., Harley, M.D., Simmons, J.A. and Turner, I.L., 2019. CoastSat: A Google Earth Engine-enabled Python toolkit to extract shorelines from publicly available satellite imagery. Environmental Modelling & Software, 122, p.104528.</a></div>`;
       return div;
     };
 
     legend.addTo(map);
-
-    map.attributionControl.addAttribution('<a href="https://zenodo.org/records/7758183">CoastSat data (CC-BY 4.0)</a>');
   </script>
 </body>
 
