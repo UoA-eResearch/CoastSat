@@ -12,9 +12,11 @@ import ee
 from shapely.ops import split
 from shapely import line_merge
 import time
-from pyproj import CRS
+from tqdm.contrib.concurrent import process_map
 
 start = time.time()
+
+CRS = 2193
 
 # Earth engine service account
 service_account = 'service-account@iron-dynamics-294100.iam.gserviceaccount.com'
@@ -30,16 +32,16 @@ poly.set_index("id", inplace=True)
 
 # These are reference shorelines
 shorelines = gpd.read_file("shorelines.geojson")
-shorelines = shorelines[shorelines.id.str.startswith("nzd")]
+shorelines = shorelines[shorelines.id.str.startswith("nzd")].to_crs(CRS)
 shorelines.set_index("id", inplace=True)
 
 # Transects, origin is landward
-transects_gdf = gpd.read_file("transects.geojson")
+transects_gdf = gpd.read_file("transects.geojson").to_crs(CRS)
 transects_gdf.set_index("id", inplace=True)
 
 print(f"{time.time() - start}: Reference polygons and shorelines loaded")
 
-for sitename in tqdm(poly.index):
+def process_site(sitename):
     print(f"Now processing {sitename}")
 
     inputs = {
@@ -59,7 +61,7 @@ for sitename in tqdm(poly.index):
         # general parameters:
         'cloud_thresh': 0.1,        # threshold on maximum cloud cover
         'dist_clouds': 300,         # ditance around clouds where shoreline can't be mapped
-        'output_epsg': 2193,       # epsg code of spatial reference system desired for the output
+        'output_epsg': CRS,       # epsg code of spatial reference system desired for the output
         # quality control:
         'check_detection': False,    # if True, shows each shoreline detection to the user for validation
         'adjust_detection': False,  # if True, allows user to adjust the postion of each shoreline by changing the threhold
@@ -83,7 +85,7 @@ for sitename in tqdm(poly.index):
     for transect_id in transects_at_site.index:
         transects[transect_id] = np.array(transects_at_site.geometry.to_crs(settings["output_epsg"])[transect_id].coords)
 
-    ref_sl = np.array(line_merge(split(shorelines.geometry.to_crs(settings["output_epsg"])[sitename], transects_gdf.to_crs(settings["output_epsg"]).unary_union)).coords)
+    ref_sl = np.array(line_merge(split(shorelines.geometry[sitename], transects_at_site.unary_union)).coords)
 
     settings["max_dist_ref"] = 100
     settings["reference_shoreline"] = np.flip(ref_sl)
@@ -126,3 +128,5 @@ for sitename in tqdm(poly.index):
                       'transect_time_series.csv')
     df.to_csv(fn, sep=',')
     print(f'{sitename} is done! Time-series of the shoreline change along the transects saved as:{fn}')
+
+process_map(process_site, poly.index, max_workers=8)
