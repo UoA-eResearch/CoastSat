@@ -1,0 +1,5 @@
+coastsat_package
+geopandas
+scipy
+matplotlib_venn
+numpy<2
