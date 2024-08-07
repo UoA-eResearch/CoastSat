@@ -83,7 +83,7 @@ def process_site(sitename):
     transects_at_site = transects_gdf[transects_gdf.site_id == sitename]
     transects = {}
     for transect_id in transects_at_site.index:
-        transects[transect_id] = np.array(transects_at_site.geometry.to_crs(settings["output_epsg"])[transect_id].coords)
+        transects[transect_id] = np.array(transects_at_site.geometry[transect_id].coords)
 
     ref_sl = np.array(line_merge(split(shorelines.geometry[sitename], transects_at_site.unary_union)).coords)
 
