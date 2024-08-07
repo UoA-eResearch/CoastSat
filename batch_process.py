@@ -102,7 +102,7 @@ def process_site(sitename):
     gdf = SDS_tools.output_to_gdf(output, geomtype)
     if gdf is None:
         raise Exception("output does not contain any mapped shorelines")
-    gdf.crs = CRS(settings['output_epsg']) # set layer projection
+    gdf.crs = CRS
     # save GEOJSON layer to file
     gdf.to_file(os.path.join(inputs['filepath'], inputs['sitename'], '%s_output_%s.geojson'%(sitename,geomtype)),
                                     driver='GeoJSON', encoding='utf-8')
