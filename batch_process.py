@@ -36,7 +36,7 @@ shorelines = shorelines[shorelines.id.str.startswith("nzd")].to_crs(CRS)
 shorelines.set_index("id", inplace=True)
 
 # Transects, origin is landward
-transects_gdf = gpd.read_file("transects.geojson").to_crs(CRS)
+transects_gdf = gpd.read_file("transects.geojson").to_crs(CRS).drop_duplicates(subset="id")
 transects_gdf.set_index("id", inplace=True)
 
 print(f"{time.time() - start}: Reference polygons and shorelines loaded")
