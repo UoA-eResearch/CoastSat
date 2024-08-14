@@ -3,6 +3,7 @@
 <head>
   <title>CoastSat transects (including NZ)</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
   crossorigin=""/>
@@ -116,7 +117,11 @@
           $("#plot").remove()
           if (window.popup) map.closePopup(window.popup)
           var p = feature.properties
-          var url = `shoreline_data_run6/${p.site_id}/time_series_tidally_corrected.csv`
+          if (p.site_id.startsWith("nzd")) {
+            var url = `data/${p.site_id}/transect_time_series_tidally_corrected.csv`
+          } else {
+            var url = `shoreline_data_run6/${p.site_id}/time_series_tidally_corrected.csv`
+          }
 
           window.popup = L.popup({minWidth: 800})
             .setContent(`<b>${p.id}</b><br>

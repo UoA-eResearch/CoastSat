@@ -29,6 +29,7 @@ print(f"{time.time() - start}: Logged into EE")
 poly = gpd.read_file("polygons.geojson")
 poly = poly[poly.id.str.startswith("nzd")]
 poly.set_index("id", inplace=True)
+poly["done"] = poly.index.to_series().apply(lambda sitename: os.path.isdir(f"data/{sitename}"))
 
 # These are reference shorelines
 shorelines = gpd.read_file("shorelines.geojson")
@@ -129,4 +130,4 @@ def process_site(sitename):
     df.to_csv(fn, sep=',')
     print(f'{sitename} is done! Time-series of the shoreline change along the transects saved as:{fn}')
 
-process_map(process_site, poly.index, max_workers=8)
+process_map(process_site, poly.index[~poly.done], max_workers=32)
