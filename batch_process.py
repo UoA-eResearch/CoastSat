@@ -10,6 +10,7 @@ import geopandas as gpd
 from tqdm.auto import tqdm
 import ee
 from shapely.ops import split
+from datetime import datetime, timedelta
 from shapely import line_merge
 import time
 from tqdm.contrib.concurrent import process_map
@@ -29,7 +30,6 @@ print(f"{time.time() - start}: Logged into EE")
 poly = gpd.read_file("polygons.geojson")
 poly = poly[poly.id.str.startswith("nzd")]
 poly.set_index("id", inplace=True)
-poly["done"] = poly.index.to_series().apply(lambda sitename: os.path.isdir(f"data/{sitename}"))
 
 # These are reference shorelines
 shorelines = gpd.read_file("shorelines.geojson")
@@ -45,9 +45,13 @@ print(f"{time.time() - start}: Reference polygons and shorelines loaded")
 def process_site(sitename):
     print(f"Now processing {sitename}")
 
+    df = pd.read_csv(f"data/{sitename}/transect_time_series.csv")
+    df.set_index("Unnamed: 0", inplace=True)
+    df.dates = pd.to_datetime(df.dates)
+
     inputs = {
         "polygon": list(poly.geometry[sitename].exterior.coords),
-        "dates": ['1900-01-01', '2030-12-30'], # All available imagery
+        "dates": [str(df.dates.max().date() + timedelta(days=1)), '2030-12-30'], # All available imagery
         "sat_list": ['L5','L7','L8'],
         "sitename": sitename,
         "filepath": 'data',
@@ -92,21 +96,15 @@ def process_site(sitename):
     settings["reference_shoreline"] = np.flip(ref_sl)
 
     output = SDS_shoreline.extract_shorelines(metadata, settings)
+    print(f"Have {len(output['shorelines'])} new shorelines for {sitename}")
+    if not output["shorelines"]:
+        return
 
     # Have to flip to get x,y?
     output['shorelines'] = [np.flip(s) for s in output['shorelines']]
 
     output = SDS_tools.remove_duplicates(output) # removes duplicates (images taken on the same date by the same satellite)
     output = SDS_tools.remove_inaccurate_georef(output, 10) # remove inaccurate georeferencing (set threshold to 10 m)
-
-    geomtype = 'points' # choose 'points' or 'lines' for the layer geometry
-    gdf = SDS_tools.output_to_gdf(output, geomtype)
-    if gdf is None:
-        raise Exception("output does not contain any mapped shorelines")
-    gdf.crs = CRS
-    # save GEOJSON layer to file
-    gdf.to_file(os.path.join(inputs['filepath'], inputs['sitename'], '%s_output_%s.geojson'%(sitename,geomtype)),
-                                    driver='GeoJSON', encoding='utf-8')
 
     settings_transects = { # parameters for computing intersections
                           'along_dist':          25,        # along-shore distance to use for computing the intersection
@@ -124,10 +122,14 @@ def process_site(sitename):
     out_dict['dates'] = output['dates']
     for key in transects.keys():
         out_dict[key] = cross_distance[key]
-    df = pd.DataFrame(out_dict)
+        
+    new_results = pd.DataFrame(out_dict)
+    if len(new_results) == 0:
+        return
+    df = pd.concat([df, new_results], ignore_index=True)
     fn = os.path.join(settings['inputs']['filepath'],settings['inputs']['sitename'],
                       'transect_time_series.csv')
     df.to_csv(fn, sep=',')
     print(f'{sitename} is done! Time-series of the shoreline change along the transects saved as:{fn}')
 
-process_map(process_site, poly.index[~poly.done], max_workers=32)
+process_map(process_site, poly.index, max_workers=32)
