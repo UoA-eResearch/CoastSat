@@ -52,7 +52,7 @@ def process_site(sitename):
     inputs = {
         "polygon": list(poly.geometry[sitename].exterior.coords),
         "dates": [str(df.dates.max().date() + timedelta(days=1)), '2030-12-30'], # All available imagery
-        "sat_list": ['L5','L7','L8'],
+        "sat_list": ['L5','L7','L8','L9'],
         "sitename": sitename,
         "filepath": 'data',
         "landsat_collection": 'C02',
@@ -127,6 +127,7 @@ def process_site(sitename):
     if len(new_results) == 0:
         return
     df = pd.concat([df, new_results], ignore_index=True)
+    df.sort_values("dates", inplace=True)
     fn = os.path.join(settings['inputs']['filepath'],settings['inputs']['sitename'],
                       'transect_time_series.csv')
     df.to_csv(fn, sep=',')
