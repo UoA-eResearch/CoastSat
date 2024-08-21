@@ -207,11 +207,11 @@
         }
         div.innerHTML += `<i style="background:${cmap(i).css()}"></i>${prefix + i}<br>`
       }
-      div.innerHTML += `<div id="attribution">Data provided by K. Vos, M. Harley and K. Splinter (University of New South Wales) as part of their work on shoreline processes;<br>
+      div.innerHTML += `<div id="attribution">Code for shoreline detection provided by K. Vos, M. Harley and K. Splinter (University of New South Wales)<br>
 <a href="https://www.unsw.edu.au/research/wrl/our-research/coastsat">https://www.unsw.edu.au/research/wrl/our-research/coastsat</a><br>
-For more information about the dataset: <a href="https://zenodo.org/records/7758183">https://zenodo.org/records/7758183</a><br>
 For more information about the technique:<br>
-<a href="https://doi.org/10.1016/j.envsoft.2019.104528">Vos, K., Splinter, K.D., Harley, M.D., Simmons, J.A. and Turner, I.L., 2019. CoastSat: A Google Earth Engine-enabled Python toolkit to extract shorelines from publicly available satellite imagery. Environmental Modelling & Software, 122, p.104528.</a></div>`;
+<a href="https://doi.org/10.1016/j.envsoft.2019.104528">Vos, K., Splinter, K.D., Harley, M.D., Simmons, J.A. and Turner, I.L., 2019. CoastSat: A Google Earth Engine-enabled Python toolkit to extract shorelines from publicly available satellite imagery. Environmental Modelling & Software, 122, p.104528.</a><br>
+      Data for New Zealand reprocessed by Nick Young, using the NIWA Tide API for tidal corrections. Shoreline position is corrected to the MSL. See <a href="https://github.com/UoA-eResearch/CoastSat/blob/main/README.MD">the README</a> for more information.</div>`;
       return div;
     };
 
