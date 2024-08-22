@@ -37,7 +37,7 @@ shorelines = shorelines[shorelines.id.str.startswith("nzd")].to_crs(CRS)
 shorelines.set_index("id", inplace=True)
 
 # Transects, origin is landward
-transects_gdf = gpd.read_file("transects.geojson").to_crs(CRS).drop_duplicates(subset="id")
+transects_gdf = gpd.read_file("transects_extended.geojson").to_crs(CRS).drop_duplicates(subset="id")
 transects_gdf.set_index("id", inplace=True)
 
 print(f"{time.time() - start}: Reference polygons and shorelines loaded")
@@ -45,21 +45,21 @@ print(f"{time.time() - start}: Reference polygons and shorelines loaded")
 def process_site(sitename):
     print(f"Now processing {sitename}")
 
-    df = pd.read_csv(f"data/{sitename}/transect_time_series.csv")
-    df.set_index("Unnamed: 0", inplace=True)
-    df.dates = pd.to_datetime(df.dates)
+    #df = pd.read_csv(f"data/{sitename}/transect_time_series.csv")
+    #df.set_index("Unnamed: 0", inplace=True)
+    #df.dates = pd.to_datetime(df.dates)
 
     inputs = {
         "polygon": list(poly.geometry[sitename].exterior.coords),
-        "dates": [str(df.dates.max().date() + timedelta(days=1)), '2030-12-30'], # All available imagery
+        "dates": ["1900-01-01", '2030-12-30'], # All available imagery
         "sat_list": ['L5','L7','L8','L9'],
         "sitename": sitename,
         "filepath": 'data',
         "landsat_collection": 'C02',
     }
     #result = SDS_download.check_images_available(inputs)
-    metadata = SDS_download.retrieve_images(inputs)
-    #metadata = SDS_download.get_metadata(inputs)
+    #metadata = SDS_download.retrieve_images(inputs)
+    metadata = SDS_download.get_metadata(inputs)
 
     # settings for the shoreline extraction
     settings = {
@@ -92,7 +92,7 @@ def process_site(sitename):
 
     ref_sl = np.array(line_merge(split(shorelines.geometry[sitename], transects_at_site.unary_union)).coords)
 
-    settings["max_dist_ref"] = 100
+    settings["max_dist_ref"] = 300
     settings["reference_shoreline"] = np.flip(ref_sl)
 
     output = SDS_shoreline.extract_shorelines(metadata, settings)
@@ -120,17 +120,19 @@ def process_site(sitename):
     # save a .csv file for Excel users
     out_dict = dict([])
     out_dict['dates'] = output['dates']
+    out_dict["satname"] = output["satname"]
     for key in transects.keys():
         out_dict[key] = cross_distance[key]
-        
-    new_results = pd.DataFrame(out_dict)
-    if len(new_results) == 0:
-        return
-    df = pd.concat([df, new_results], ignore_index=True)
-    df.sort_values("dates", inplace=True)
+
+    #new_results = pd.DataFrame(out_dict)
+    #if len(new_results) == 0:
+    #    return
+    #df = pd.concat([df, new_results], ignore_index=True)
+    #df.sort_values("dates", inplace=True)
+    df = pd.DataFrame(out_dict)
     fn = os.path.join(settings['inputs']['filepath'],settings['inputs']['sitename'],
                       'transect_time_series.csv')
-    df.to_csv(fn, sep=',')
+    df.to_csv(fn, index=False, float_format='%.2f')
     print(f'{sitename} is done! Time-series of the shoreline change along the transects saved as:{fn}')
 
 process_map(process_site, poly.index, max_workers=32)

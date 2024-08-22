@@ -98,7 +98,7 @@
     var cmap = chroma.scale('RdYlBu').domain([-3, 3])
 
     map.spin(true);
-    $.getJSON("transects.geojson", function (geojson) {
+    $.getJSON("transects_extended.geojson", function (geojson) {
       console.log(geojson)
       for (var f of geojson.features) {
         for (var c of f.geometry.coordinates) {
