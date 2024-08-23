@@ -100,6 +100,9 @@
     map.spin(true);
     $.getJSON("transects_extended.geojson", function (geojson) {
       console.log(geojson)
+      const hidden = ["nzd0285", "nzd0284", "nzd0282"]
+      geojson.features = geojson.features.filter(f => !hidden.includes(f.properties.site_id))
+      console.log(geojson)
       for (var f of geojson.features) {
         for (var c of f.geometry.coordinates) {
           if (c[0] < 0) c[0] += 360
@@ -110,6 +113,9 @@
         map: map,
         data: geojson,
         color: function(index, feature) {
+          if (feature.properties.n_points_nonan < 10) {
+            return {r:0, g:0, b:0}
+          }
           var c = cmap(feature.properties.trend).gl()
           return { r: c[0], g: c[1], b: c[2] };
         },
@@ -126,14 +132,16 @@
           window.popup = L.popup({minWidth: 800})
             .setContent(`<b>${p.id}</b><br>
               along_dist: ${p.along_dist?.toFixed(2)}<br>
-              along_dist_norm: ${p.along_dist_norm}<br>
+              along_dist_norm: ${p.along_dist_norm?.toFixed(2)}<br>
               beach_slope: ${p.beach_slope}<br>
-              cil: ${p.cil}<br>
-              ciu: ${p.ciu}<br>
               n_points: ${p.n_points}<br>
               n_points_nonan: ${p.n_points_nonan}<br>
-              orientation: ${p.orientation}<br>
-              trend: ${p.trend?.toFixed(2)}<br>
+              orientation: ${p.orientation?.toFixed(2)}<br>
+              trend: ${p.trend?.toFixed(2)} m/year<br>
+              R² score: ${p.r2_score?.toFixed(2)} ${p.r2_score < .05 ? " score < 0.05 - linear trend might not be reliable" : ""}<br>
+              mae: ${p.mae?.toFixed(2)}<br>
+              mse: ${p.mse?.toFixed(2)}<br>
+              rmse: ${p.rmse?.toFixed(2)}<br>
               site: ${p.site_id}<br>
               <a href="${url}" target="_blank" class="link">Download time series for ${p.site_id}</a>
               <div id="plot"></div>
@@ -207,6 +215,7 @@
         }
         div.innerHTML += `<i style="background:${cmap(i).css()}"></i>${prefix + i}<br>`
       }
+      div.innerHTML += `<i style="background:black"></i>Uncertain<br>`
       div.innerHTML += `<div id="attribution">Code for shoreline detection provided by K. Vos, M. Harley and K. Splinter (University of New South Wales)<br>
 <a href="https://www.unsw.edu.au/research/wrl/our-research/coastsat">https://www.unsw.edu.au/research/wrl/our-research/coastsat</a><br>
 For more information about the technique:<br>
