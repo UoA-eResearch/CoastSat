@@ -161,13 +161,21 @@
               var mean = Plotly.d3.mean(values)
               values = values.map(v => v ? v - mean : v)
               console.log(dates,values)
+              var min_date = new Date(results.data[0].dates)
+              var max_date = new Date(results.data[results.data.length - 1].dates)
+              var datediff = (max_date - min_date) / 1000 / 60 / 60 / 24 / 365.25
               var data = [{
                   type: "scatter",
                   mode: "lines+markers",
-                  name: "",
+                  name: "chainage",
                   x: dates,
                   y: values,
                   //line: {color: '#17BECF'}
+              }, {
+                type: "line",
+                x: [min_date, max_date],
+                y: [p.intercept - mean, p.trend * datediff + p.intercept - mean],
+                name: "trendline"
               }];
               var layout = {
                   title: `Time series for ${p.id}`,
