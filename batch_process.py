@@ -45,21 +45,21 @@ print(f"{time.time() - start}: Reference polygons and shorelines loaded")
 def process_site(sitename):
     print(f"Now processing {sitename}")
 
-    #df = pd.read_csv(f"data/{sitename}/transect_time_series.csv")
+    df = pd.read_csv(f"data/{sitename}/transect_time_series.csv")
     #df.set_index("Unnamed: 0", inplace=True)
-    #df.dates = pd.to_datetime(df.dates)
+    df.dates = pd.to_datetime(df.dates)
 
     inputs = {
         "polygon": list(poly.geometry[sitename].exterior.coords),
-        "dates": ["1900-01-01", '2030-12-30'], # All available imagery
+        "dates": [str(df.dates.max().date() + timedelta(days=1)), '2030-12-30'], # All available imagery
         "sat_list": ['L5','L7','L8','L9'],
         "sitename": sitename,
         "filepath": 'data',
         "landsat_collection": 'C02',
     }
     #result = SDS_download.check_images_available(inputs)
-    #metadata = SDS_download.retrieve_images(inputs)
-    metadata = SDS_download.get_metadata(inputs)
+    metadata = SDS_download.retrieve_images(inputs)
+    #metadata = SDS_download.get_metadata(inputs)
 
     # settings for the shoreline extraction
     settings = {
@@ -124,12 +124,12 @@ def process_site(sitename):
     for key in transects.keys():
         out_dict[key] = cross_distance[key]
 
-    #new_results = pd.DataFrame(out_dict)
-    #if len(new_results) == 0:
-    #    return
-    #df = pd.concat([df, new_results], ignore_index=True)
-    #df.sort_values("dates", inplace=True)
-    df = pd.DataFrame(out_dict)
+    #df = pd.DataFrame(out_dict)
+    new_results = pd.DataFrame(out_dict)
+    if len(new_results) == 0:
+        return
+    df = pd.concat([df, new_results], ignore_index=True)
+    df.sort_values("dates", inplace=True)
     fn = os.path.join(settings['inputs']['filepath'],settings['inputs']['sitename'],
                       'transect_time_series.csv')
     df.to_csv(fn, index=False, float_format='%.2f')
