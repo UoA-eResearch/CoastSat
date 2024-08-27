@@ -129,6 +129,8 @@
           } else {
             var url = `shoreline_data_run6/${p.site_id}/time_series_tidally_corrected.csv`
           }
+          const urlParams = new URLSearchParams(window.location.search);
+          const debug = urlParams.has('debug') && p.site_id.startsWith("nzd");
 
           window.popup = L.popup({minWidth: 800})
             .setContent(`<b>${p.id}</b><br>
@@ -146,7 +148,8 @@
               mse: ${p.mse?.toFixed(2)}<br>
               rmse: ${p.rmse?.toFixed(2)}<br>
               site: ${p.site_id}<br>
-              <a href="${url}" target="_blank" class="link">Download time series for ${p.site_id}</a>
+              <a href="${url}" target="_blank" class="link">Download time series for ${p.site_id}</a><br>
+              ${debug ? `<img id="img" style='height: 100%; width: 100%; object-fit: contain'>` : ""}
               <div id="plot"></div>
             `)
             .setLatLng(e.latlng)
@@ -161,6 +164,7 @@
               var filtered_data = results.data.filter(d => d[p.id])
               var dates = filtered_data.map(d => d.dates)
               var values = filtered_data.map(d => d[p.id])
+              var satname = filtered_data.map(d => d.satname)
               var mean = Plotly.d3.mean(values)
               values = values.map(v => v ? v - mean : v)
               console.log(dates,values)
@@ -195,6 +199,18 @@
               console.log(px)
               px.y -= 400;
               map.panTo(map.unproject(px),{animate: true});
+              if (debug) {
+                $("#plot").on('plotly_hover plotly_click', function(event, data){
+                    console.log(data)
+                    var d = data.points[0].x;
+                    console.log(`Hovered on ${d}`)
+                    var dt = dates[data.points[0].pointIndex].replace("+00:00", "").replace(/[ :]/g,"-");
+                    var sat = satname[data.points[0].pointIndex]
+                    var plot_url = `https://wave.storm-surge.cloud.edu.au/CoastSat_data/${p.site_id}/jpg_files/detection/${dt}_${sat}.jpg`
+                    console.log(plot_url)
+                    $("#img").attr("src", plot_url);
+                })
+              }
             }
           })
         },
