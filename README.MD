@@ -1,5 +1,7 @@
 # CoastSat
 
+[![DOI](https://zenodo.org/badge/829830765.svg)](https://zenodo.org/doi/10.5281/zenodo.13835882)
+
 This repository contains a [Leaflet.glify](https://github.com/robertleeplummerjr/Leaflet.glify) map ([`index.html`](index.html)) of shoreline change around the Pacific Rim. The user can click on a transect to view a plotly.js plot of change over time for that transect. The HTML and CSVs are hosted on GitHub Pages. It also contains code required to update data in New Zealand.
 
 Installation: `pip install -r requirements.txt`
