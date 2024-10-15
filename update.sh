@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 git pull
 ./batch_process.py
 jupyter nbconvert --to notebook --execute --inplace tidal_correction.ipynb linear_models.ipynb
