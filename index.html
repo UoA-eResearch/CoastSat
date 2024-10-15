@@ -22,6 +22,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"
     integrity="sha512-zInFF17qBFVvvvFpIfeBzo7Tj7+rQxLeTJDmbxjBz5/zIr89YVbTNelNhdTT+/DCrxoVzBeUPVFJsczKbB7sew=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="
+https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/js/leaflet-sidebar.min.js
+"></script>
+<link href="
+https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.css
+" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LT8M0QZJES"></script>
   <script>
@@ -72,12 +79,43 @@
 
 <body>
   <div id="map"></div>
+  <div id="sidebar" class="leaflet-sidebar collapsed">
+      <!-- Nav tabs -->
+      <div class="leaflet-sidebar-tabs">
+          <ul role="tablist"> <!-- top aligned tabs -->
+              <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+          </ul>
+
+          <ul role="tablist"> <!-- bottom aligned tabs -->
+            <li><a href="https://github.com/UoA-eResearch/CoastSat"><i class="fa fa-github"></i></a></li>
+          </ul>
+      </div>
+
+      <!-- Tab panes -->
+      <div class="leaflet-sidebar-content">
+          <div class="leaflet-sidebar-pane" id="home">
+            <div id="attribution">Code for shoreline detection provided by K. Vos, M. Harley and K. Splinter (University of New South Wales)<br>
+              <a href="https://www.unsw.edu.au/research/wrl/our-research/coastsat">https://www.unsw.edu.au/research/wrl/our-research/coastsat</a><br><br>
+              For more information about the technique:<br>
+              <a href="https://doi.org/10.1016/j.envsoft.2019.104528">Vos, K., Splinter, K.D., Harley, M.D., Simmons, J.A. and Turner, I.L., 2019. CoastSat: A Google Earth Engine-enabled Python toolkit to extract shorelines from publicly available satellite imagery. Environmental Modelling & Software, 122, p.104528.</a><br><br>
+                    Data for New Zealand reprocessed by Nick Young, using the NIWA Tide API for tidal corrections. Shoreline position is corrected to the MSL. See <a href="https://github.com/UoA-eResearch/CoastSat/blob/main/README.MD">the README</a> for more information. You can download data for an individual site by clicking on a transect, or you can download everything from:<br> <a href="https://zenodo.org/doi/10.5281/zenodo.13835882"><img src="https://zenodo.org/badge/829830765.svg"></a>
+          </div>
+      </div>
+  </div>
   <script>
+
     var map = L.map('map', {
       center: [-42, 172],
       zoom: 6,
       //worldCopyJump: true
     })
+
+    var sidebar = L.control.sidebar({
+        autopan: false,       // whether to maintain the centered map point when opening the sidebar
+        closeButton: true,    // whether t add a close button to the panes
+        container: 'sidebar', // the DOM container or #ID of a predefined sidebar container that should be used
+        position: 'right',     // left or right
+    }).addTo(map).open("home")
 
     var baseMaps = {
       "OSM": L.tileLayer.provider("OpenStreetMap.Mapnik"),
@@ -243,11 +281,6 @@
         div.innerHTML += `<i style="background:${cmap(i).css()}"></i>${prefix + i}<br>`
       }
       div.innerHTML += `<i style="background:black"></i>Uncertain<br>`
-      div.innerHTML += `<div id="attribution">Code for shoreline detection provided by K. Vos, M. Harley and K. Splinter (University of New South Wales)<br>
-<a href="https://www.unsw.edu.au/research/wrl/our-research/coastsat">https://www.unsw.edu.au/research/wrl/our-research/coastsat</a><br>
-For more information about the technique:<br>
-<a href="https://doi.org/10.1016/j.envsoft.2019.104528">Vos, K., Splinter, K.D., Harley, M.D., Simmons, J.A. and Turner, I.L., 2019. CoastSat: A Google Earth Engine-enabled Python toolkit to extract shorelines from publicly available satellite imagery. Environmental Modelling & Software, 122, p.104528.</a><br>
-      Data for New Zealand reprocessed by Nick Young, using the NIWA Tide API for tidal corrections. Shoreline position is corrected to the MSL. See <a href="https://github.com/UoA-eResearch/CoastSat/blob/main/README.MD">the README</a> for more information.</div>`;
       return div;
     };
 
