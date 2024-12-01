@@ -45,13 +45,18 @@ print(f"{time.time() - start}: Reference polygons and shorelines loaded")
 def process_site(sitename):
     print(f"Now processing {sitename}")
 
-    df = pd.read_csv(f"data/{sitename}/transect_time_series.csv")
-    #df.set_index("Unnamed: 0", inplace=True)
-    df.dates = pd.to_datetime(df.dates)
+    try:
+        df = pd.read_csv(f"data/{sitename}/transect_time_series.csv")
+        #df.set_index("Unnamed: 0", inplace=True)
+        df.dates = pd.to_datetime(df.dates)
+        min_date = str(df.dates.max().date() + timedelta(days=1))
+    except FileNotFoundError:
+        df = pd.DataFrame()
+        min_date = '1984-01-01'
 
     inputs = {
         "polygon": list(poly.geometry[sitename].exterior.coords),
-        "dates": [str(df.dates.max().date() + timedelta(days=1)), '2030-12-30'], # All available imagery
+        "dates": [min_date, '2030-12-30'], # All available imagery
         "sat_list": ['L5','L7','L8','L9'],
         "sitename": sitename,
         "filepath": 'data',
