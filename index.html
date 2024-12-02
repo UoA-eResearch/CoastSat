@@ -11,6 +11,8 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
   crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"/>
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
   <script src="https://unpkg.com/leaflet.glify@3.3.0/dist/glify-browser.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
   <script src="https://unpkg.com/leaflet-spin@1.1.0/leaflet.spin.min.js"></script>
@@ -100,7 +102,9 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
               For more information about the technique:<br>
               <a href="https://doi.org/10.1016/j.envsoft.2019.104528">Vos, K., Splinter, K.D., Harley, M.D., Simmons, J.A. and Turner, I.L., 2019. CoastSat: A Google Earth Engine-enabled Python toolkit to extract shorelines from publicly available satellite imagery. Environmental Modelling & Software, 122, p.104528.</a><br><br>
                     Data for New Zealand reprocessed by Nick Young, using the NIWA Tide API for tidal corrections. Shoreline position is corrected to the MSL. See <a href="https://github.com/UoA-eResearch/CoastSat/blob/main/README.MD">the README</a> for more information. You can download data for an individual site by clicking on a transect, or you can download everything from:<br> <a href="https://zenodo.org/doi/10.5281/zenodo.13835882"><img src="https://zenodo.org/badge/829830765.svg"></a><br>
-                    If you have any questions about this data, please contact <a href="https://profiles.auckland.ac.nz/g-coco">Giovanni Coco</a>
+                    If you have any questions about this data, please contact <a href="https://profiles.auckland.ac.nz/g-coco">Giovanni Coco</a><br><br>
+              If you would like to suggest a new site, please use the polyline tool on the left to draw a reference shoreline. Once you do so, you can click the below button to send your shoreline to us via email.<br>
+              <a id="mailto" target="_blank" class="btn btn-primary" disabled>Email Us</a>
           </div>
       </div>
   </div>
@@ -129,8 +133,51 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
       })
     }
+    
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    var options = {
+        position: 'topleft',
+        draw: {
+            polyline: {
+                shapeOptions: {
+                    color: '#f357a1',
+                }
+            },
+            polygon: false,
+            rectangle: false,
+            marker: false,
+            circlemarker: false,
+            circle: false
+        },
+        edit: {
+            featureGroup: drawnItems,
+            remove: true
+        }
+    };
+
+    var drawControl = new L.Control.Draw(options);
+    map.addControl(drawControl);
+
+    function drawHandler() {
+      console.log(drawnItems.toGeoJSON())
+      $("#mailto").attr("href", "mailto:g.coco@auckland.ac.nz?subject=Suggested new CoastSat NZ site&cc=nick.young@auckland.ac.nz&body=" + encodeURIComponent(JSON.stringify(drawnItems.toGeoJSON())))
+      $("#mailto").removeAttr("disabled")
+    }
+
+    map.on(L.Draw.Event.CREATED, function (e) {
+        console.log("created", e)
+        e.layer.addTo(drawnItems)
+        drawHandler();
+    });
+    map.on(L.Draw.Event.EDITED, function (e) {
+        console.log("edited", e)
+        drawHandler();
+    });
 
     var overlayMaps = {
+      "Drawn items": drawnItems
     }
 
     L.control.layers(baseMaps, overlayMaps, { position: "topleft" }).addTo(map);
