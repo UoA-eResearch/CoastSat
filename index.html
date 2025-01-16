@@ -213,8 +213,10 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
           var g = feature.geometry.coordinates
           if (p.site_id.startsWith("nzd")) {
             var url = `data/${p.site_id}/transect_time_series_tidally_corrected.csv`
+            var download_url = `data/${p.site_id}/${p.site_id}.xlsx`
           } else {
             var url = `shoreline_data_run6/${p.site_id}/time_series_tidally_corrected.csv`
+            download_url = url
           }
           const urlParams = new URLSearchParams(window.location.search);
           const debug = urlParams.has('debug') && p.site_id.startsWith("nzd");
@@ -235,7 +237,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
               mse: ${p.mse?.toFixed(2)}<br>
               rmse: ${p.rmse?.toFixed(2)}<br>
               site: ${p.site_id}<br>
-              <a href="${url}" target="_blank" class="link">Download time series for ${p.site_id}</a><br>
+              <a href="${download_url}" target="_blank" class="link">Download time series for ${p.site_id}</a><br>
               ${debug ? `<img id="img" style='height: 100%; width: 100%; object-fit: contain'>` : ""}
               <div id="plot"></div>
             `)
