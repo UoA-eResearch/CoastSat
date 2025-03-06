@@ -2,20 +2,21 @@
 
 <head>
   <title>CoastSat transects (including NZ)</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta charset="UTF-8">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-  crossorigin=""/>
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-  crossorigin=""></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"/>
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
   <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
   <script src="https://unpkg.com/leaflet.glify@3.3.0/dist/glify-browser.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
   <script src="https://unpkg.com/leaflet-spin@1.1.0/leaflet.spin.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.min.js"
+    integrity="sha512-0A4MbfuZq5Au9EdpI1S5rUTXlibNBi8CuZ/X3ycwXyZiCjNzpiO9YH6EMqPgzZm6vfNCuZStBQHjnO17nIC0IQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
     integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
@@ -28,201 +29,213 @@
   <script src="
 https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/js/leaflet-sidebar.min.js
 "></script>
-<link href="
+  <link href="
 https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.css
 " rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LT8M0QZJES"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
 
     gtag('config', 'G-LT8M0QZJES');
   </script>
-  
+
   <style>
-      body,
-      html,
-      #map {
-          width: 100%;
-          height: 100%;
-          margin: 0;
-          padding: 0;
-      }
+    body,
+    html,
+    #map {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
 
-      .legend {
-          color: white;
-          padding: 10px;
-          background-color: rgba(0, 0, 0, 0.8);
-          border-radius: 5px;
-          max-width: 500px;
-      }
+    .legend {
+      color: white;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 5px;
+      max-width: 500px;
+    }
 
-      .legend i {
-          width: 18px;
-          height: 18px;
-          float: left;
-          margin-right: 8px;
-          opacity: 0.7;
-          clear: left;
-      }
+    .legend i {
+      width: 18px;
+      height: 18px;
+      float: left;
+      margin-right: 8px;
+      opacity: 0.7;
+      clear: left;
+    }
 
-      .legend h4 {
-        margin-top: 0px;
-      }
+    .legend h4 {
+      margin-top: 0px;
+    }
 
-      .link {
-          text-decoration: underline;
-          cursor: pointer;
-      }
+    .link {
+      text-decoration: underline;
+      cursor: pointer;
+    }
 
-      .fa {
-        line-height: inherit;
-      }
+    .fa {
+      line-height: inherit;
+    }
   </style>
 </head>
 
 <body>
   <div id="map"></div>
   <div id="sidebar" class="leaflet-sidebar collapsed">
-      <!-- Nav tabs -->
-      <div class="leaflet-sidebar-tabs">
-          <ul role="tablist"> <!-- top aligned tabs -->
-              <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
-              <li><a href="https://github.com/UoA-eResearch/CoastSat"><i class="fa fa-github"></i></a></li>
-          </ul>
+    <!-- Nav tabs -->
+    <div class="leaflet-sidebar-tabs">
+      <ul role="tablist"> <!-- top aligned tabs -->
+        <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+        <li><a href="https://github.com/UoA-eResearch/CoastSat"><i class="fa fa-github"></i></a></li>
+      </ul>
+    </div>
+
+    <!-- Tab panes -->
+    <div class="leaflet-sidebar-content">
+      <div class="leaflet-sidebar-pane" id="home">
+        <div id="attribution">Code for shoreline detection provided by K. Vos, M. Harley and K. Splinter (University of
+          New South Wales)<br>
+          <a
+            href="https://www.unsw.edu.au/research/wrl/our-research/coastsat">https://www.unsw.edu.au/research/wrl/our-research/coastsat</a><br><br>
+          For more information about the technique:<br>
+          <a href="https://doi.org/10.1016/j.envsoft.2019.104528">Vos, K., Splinter, K.D., Harley, M.D., Simmons, J.A.
+            and Turner, I.L., 2019. CoastSat: A Google Earth Engine-enabled Python toolkit to extract shorelines from
+            publicly available satellite imagery. Environmental Modelling & Software, 122, p.104528.</a><br><br>
+          Data for New Zealand reprocessed by Nick Young, using the NIWA Tide API for tidal corrections. Shoreline
+          position is corrected to the MSL. See <a
+            href="https://github.com/UoA-eResearch/CoastSat/blob/main/README.MD">the README</a> for more information.
+          You can download data for an individual site by clicking on a transect, or you can download everything
+          from:<br> <a href="https://zenodo.org/doi/10.5281/zenodo.13835882"><img
+              src="https://zenodo.org/badge/829830765.svg"></a><br>
+          If you have any questions about this data, please contact <a
+            href="https://profiles.auckland.ac.nz/g-coco">Giovanni Coco</a><br><br>
+          If you would like to suggest a new site, please use the polyline tool on the left to draw a reference
+          shoreline. Once you do so, you can click the below button to send your shoreline to us via email.<br>
+          <a id="mailto" target="_blank" class="btn btn-primary" disabled>Email Us</a>
+        </div>
       </div>
+    </div>
+    <script>
 
-      <!-- Tab panes -->
-      <div class="leaflet-sidebar-content">
-          <div class="leaflet-sidebar-pane" id="home">
-            <div id="attribution">Code for shoreline detection provided by K. Vos, M. Harley and K. Splinter (University of New South Wales)<br>
-              <a href="https://www.unsw.edu.au/research/wrl/our-research/coastsat">https://www.unsw.edu.au/research/wrl/our-research/coastsat</a><br><br>
-              For more information about the technique:<br>
-              <a href="https://doi.org/10.1016/j.envsoft.2019.104528">Vos, K., Splinter, K.D., Harley, M.D., Simmons, J.A. and Turner, I.L., 2019. CoastSat: A Google Earth Engine-enabled Python toolkit to extract shorelines from publicly available satellite imagery. Environmental Modelling & Software, 122, p.104528.</a><br><br>
-                    Data for New Zealand reprocessed by Nick Young, using the NIWA Tide API for tidal corrections. Shoreline position is corrected to the MSL. See <a href="https://github.com/UoA-eResearch/CoastSat/blob/main/README.MD">the README</a> for more information. You can download data for an individual site by clicking on a transect, or you can download everything from:<br> <a href="https://zenodo.org/doi/10.5281/zenodo.13835882"><img src="https://zenodo.org/badge/829830765.svg"></a><br>
-                    If you have any questions about this data, please contact <a href="https://profiles.auckland.ac.nz/g-coco">Giovanni Coco</a><br><br>
-              If you would like to suggest a new site, please use the polyline tool on the left to draw a reference shoreline. Once you do so, you can click the below button to send your shoreline to us via email.<br>
-              <a id="mailto" target="_blank" class="btn btn-primary" disabled>Email Us</a>
-          </div>
-      </div>
-  </div>
-  <script>
+      var map = L.map('map', {
+        center: [-42, 172],
+        zoom: 6,
+        //worldCopyJump: true
+      })
+      var hash = new L.Hash(map);
 
-    var map = L.map('map', {
-      center: [-42, 172],
-      zoom: 6,
-      //worldCopyJump: true
-    })
-
-    var sidebar = L.control.sidebar({
+      var sidebar = L.control.sidebar({
         autopan: false,       // whether to maintain the centered map point when opening the sidebar
         closeButton: true,    // whether t add a close button to the panes
         container: 'sidebar', // the DOM container or #ID of a predefined sidebar container that should be used
         position: 'right',     // left or right
-    }).addTo(map).open("home")
+      }).addTo(map).open("home")
 
-    var baseMaps = {
-      "OSM": L.tileLayer.provider("OpenStreetMap.Mapnik"),
-      "CartoDB Positron": L.tileLayer.provider('CartoDB.Positron'),
-      "CartoDB Dark Matter": L.tileLayer.provider("CartoDB.DarkMatter"),
-      "ESRI WorldImagery": L.tileLayer.provider("Esri.WorldImagery").addTo(map),
-      "Google Hybrid": L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
-        maxZoom: 20,
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-      })
-    }
-    
-    var drawnItems = new L.FeatureGroup();
-    map.addLayer(drawnItems);
+      var baseMaps = {
+        "OSM": L.tileLayer.provider("OpenStreetMap.Mapnik"),
+        "CartoDB Positron": L.tileLayer.provider('CartoDB.Positron'),
+        "CartoDB Dark Matter": L.tileLayer.provider("CartoDB.DarkMatter"),
+        "ESRI WorldImagery": L.tileLayer.provider("Esri.WorldImagery").addTo(map),
+        "Google Hybrid": L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+          maxZoom: 20,
+          subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        })
+      }
 
-    var options = {
+      var drawnItems = new L.FeatureGroup();
+      map.addLayer(drawnItems);
+
+      var options = {
         position: 'topleft',
         draw: {
-            polyline: {
-                shapeOptions: {
-                    color: '#f357a1',
-                }
-            },
-            polygon: false,
-            rectangle: false,
-            marker: false,
-            circlemarker: false,
-            circle: false
+          polyline: {
+            shapeOptions: {
+              color: '#f357a1',
+            }
+          },
+          polygon: false,
+          rectangle: false,
+          marker: false,
+          circlemarker: false,
+          circle: false
         },
         edit: {
-            featureGroup: drawnItems,
-            remove: true
+          featureGroup: drawnItems,
+          remove: true
         }
-    };
+      };
 
-    var drawControl = new L.Control.Draw(options);
-    map.addControl(drawControl);
+      var drawControl = new L.Control.Draw(options);
+      map.addControl(drawControl);
 
-    function drawHandler() {
-      console.log(drawnItems.toGeoJSON())
-      $("#mailto").attr("href", "mailto:g.coco@auckland.ac.nz?subject=Suggested new CoastSat NZ site&cc=nick.young@auckland.ac.nz&body=" + encodeURIComponent(JSON.stringify(drawnItems.toGeoJSON())))
-      $("#mailto").removeAttr("disabled")
-    }
+      function drawHandler() {
+        console.log(drawnItems.toGeoJSON())
+        $("#mailto").attr("href", "mailto:g.coco@auckland.ac.nz?subject=Suggested new CoastSat NZ site&cc=nick.young@auckland.ac.nz&body=" + encodeURIComponent(JSON.stringify(drawnItems.toGeoJSON())))
+        $("#mailto").removeAttr("disabled")
+      }
 
-    map.on(L.Draw.Event.CREATED, function (e) {
+      map.on(L.Draw.Event.CREATED, function (e) {
         console.log("created", e)
         e.layer.addTo(drawnItems)
         drawHandler();
-    });
-    map.on(L.Draw.Event.EDITED, function (e) {
+      });
+      map.on(L.Draw.Event.EDITED, function (e) {
         console.log("edited", e)
         drawHandler();
-    });
+      });
 
-    var overlayMaps = {
-      "Drawn items": drawnItems
-    }
-
-    L.control.layers(baseMaps, overlayMaps, { position: "topleft" }).addTo(map);
-
-    var cmap = chroma.scale('RdYlBu').domain([-3, 3])
-
-    map.spin(true);
-    $.getJSON("transects_extended.geojson", function (geojson) {
-      console.log(geojson)
-      const hidden = ["nzd0285", "nzd0284", "nzd0282"]
-      geojson.features = geojson.features.filter(f => !hidden.includes(f.properties.site_id))
-      console.log(geojson)
-      for (var f of geojson.features) {
-        for (var c of f.geometry.coordinates) {
-          if (c[0] < 0) c[0] += 360
-        }
+      var overlayMaps = {
+        "Drawn items": drawnItems
       }
-      L.glify.longitudeFirst()
-      L.glify.lines({
-        map: map,
-        data: geojson,
-        color: function(index, feature) {
-          if (feature.properties.n_points_nonan < 10) {
-            return {r:0, g:0, b:0}
-          }
-          var c = cmap(feature.properties.trend).gl()
-          return { r: c[0], g: c[1], b: c[2] };
-        },
-        click: function (e, feature) {
-          $("#plot").remove()
-          if (window.popup) map.closePopup(window.popup)
-          var p = feature.properties
-          var g = feature.geometry.coordinates
-          if (p.site_id.startsWith("nzd")) {
-            var url = `data/${p.site_id}/transect_time_series_tidally_corrected.csv`
-            var download_url = `data/${p.site_id}/${p.site_id}.xlsx`
-          } else {
-            var url = `shoreline_data_run6/${p.site_id}/time_series_tidally_corrected.csv`
-            download_url = url
-          }
-          const urlParams = new URLSearchParams(window.location.search);
-          const debug = urlParams.has('debug') && p.site_id.startsWith("nzd");
 
-          window.popup = L.popup({minWidth: 800})
-            .setContent(`<b>${p.id}</b><br>
+      L.control.layers(baseMaps, overlayMaps, { position: "topleft" }).addTo(map);
+
+      var cmap = chroma.scale('RdYlBu').domain([-3, 3])
+
+      map.spin(true);
+      $.getJSON("transects_extended.geojson", function (geojson) {
+        console.log(geojson)
+        const hidden = ["nzd0285", "nzd0284", "nzd0282"]
+        geojson.features = geojson.features.filter(f => !hidden.includes(f.properties.site_id))
+        console.log(geojson)
+        for (var f of geojson.features) {
+          for (var c of f.geometry.coordinates) {
+            if (c[0] < 0) c[0] += 360
+          }
+        }
+        L.glify.longitudeFirst()
+        L.glify.lines({
+          map: map,
+          data: geojson,
+          color: function (index, feature) {
+            if (feature.properties.n_points_nonan < 10) {
+              return { r: 0, g: 0, b: 0 }
+            }
+            var c = cmap(feature.properties.trend).gl()
+            return { r: c[0], g: c[1], b: c[2] };
+          },
+          click: function (e, feature) {
+            $("#plot").remove()
+            if (window.popup) map.closePopup(window.popup)
+            var p = feature.properties
+            var g = feature.geometry.coordinates
+            if (p.site_id.startsWith("nzd")) {
+              var url = `data/${p.site_id}/transect_time_series_tidally_corrected.csv`
+              var download_url = `data/${p.site_id}/${p.site_id}.xlsx`
+            } else {
+              var url = `shoreline_data_run6/${p.site_id}/time_series_tidally_corrected.csv`
+              download_url = url
+            }
+            const urlParams = new URLSearchParams(window.location.search);
+            const debug = urlParams.has('debug') && p.site_id.startsWith("nzd");
+
+            window.popup = L.popup({ minWidth: 800 })
+              .setContent(`<b>${p.id}</b><br>
               along_dist: ${p.along_dist?.toFixed(2)}<br>
               along_dist_norm: ${p.along_dist_norm?.toFixed(2)}<br>
               origin point (landward): ${g[0][1].toFixed(6)},${g[0][0].toFixed(6)}<br>
@@ -241,102 +254,102 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
               ${debug ? `<img id="img" style='height: 100%; width: 100%; object-fit: contain'>` : ""}
               <div id="plot"></div>
             `)
-            .setLatLng(e.latlng)
-            .addTo(map);
-          Papa.parse(url, {
-            download: true,
-            header: true,
-            dynamicTyping: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-              console.log(results)
-              var filtered_data = results.data.filter(d => d[p.id])
-              var dates = filtered_data.map(d => d.dates)
-              var values = filtered_data.map(d => d[p.id])
-              var satname = filtered_data.map(d => d.satname)
-              var mean = Plotly.d3.mean(values)
-              values = values.map(v => v ? v - mean : v)
-              console.log(dates,values)
-              var min_date = new Date(results.data[0].dates)
-              var max_date = new Date(results.data[results.data.length - 1].dates)
-              var datediff = (max_date - min_date) / 1000 / 60 / 60 / 24 / 365.25
-              var data = [{
+              .setLatLng(e.latlng)
+              .addTo(map);
+            Papa.parse(url, {
+              download: true,
+              header: true,
+              dynamicTyping: true,
+              skipEmptyLines: true,
+              complete: function (results) {
+                console.log(results)
+                var filtered_data = results.data.filter(d => d[p.id])
+                var dates = filtered_data.map(d => d.dates)
+                var values = filtered_data.map(d => d[p.id])
+                var satname = filtered_data.map(d => d.satname)
+                var mean = Plotly.d3.mean(values)
+                values = values.map(v => v ? v - mean : v)
+                console.log(dates, values)
+                var min_date = new Date(results.data[0].dates)
+                var max_date = new Date(results.data[results.data.length - 1].dates)
+                var datediff = (max_date - min_date) / 1000 / 60 / 60 / 24 / 365.25
+                var data = [{
                   type: "scatter",
                   mode: "lines+markers",
                   name: "chainage",
                   x: dates,
                   y: values,
                   //line: {color: '#17BECF'}
-              }, {
-                type: "line",
-                x: [min_date, max_date],
-                y: [p.intercept - mean, p.trend * datediff + p.intercept - mean],
-                name: "trendline"
-              }];
-              var layout = {
+                }, {
+                  type: "line",
+                  x: [min_date, max_date],
+                  y: [p.intercept - mean, p.trend * datediff + p.intercept - mean],
+                  name: "trendline"
+                }];
+                var layout = {
                   title: `Time series for ${p.id}`,
                   xaxis: {
-                      title: "Date/Time"
+                    title: "Date/Time"
                   },
                   yaxis: {
-                      title: "cross-shore change [m]",
-                      hoverformat: '.1f'
+                    title: "cross-shore change [m]",
+                    hoverformat: '.1f'
                   }
-              };
-              Plotly.newPlot("plot", data, layout);
-              var px = map.project(e.latlng);
-              console.log(px)
-              px.y -= 400;
-              map.panTo(map.unproject(px),{animate: true});
-              if (debug) {
-                $("#plot").on('plotly_hover plotly_click', function(event, data){
+                };
+                Plotly.newPlot("plot", data, layout);
+                var px = map.project(e.latlng);
+                console.log(px)
+                px.y -= 400;
+                map.panTo(map.unproject(px), { animate: true });
+                if (debug) {
+                  $("#plot").on('plotly_hover plotly_click', function (event, data) {
                     console.log(data)
                     var d = data.points[0].x;
                     console.log(`Hovered on ${d}`)
-                    var dt = dates[data.points[0].pointIndex].replace("+00:00", "").replace(/[ :]/g,"-");
+                    var dt = dates[data.points[0].pointIndex].replace("+00:00", "").replace(/[ :]/g, "-");
                     var sat = satname[data.points[0].pointIndex]
                     var plot_url = `https://wave.storm-surge.cloud.edu.au/CoastSat_data/${p.site_id}/jpg_files/detection/${dt}_${sat}.jpg`
                     console.log(plot_url)
                     $("#img").attr("src", plot_url);
-                })
+                  })
+                }
               }
-            }
-          })
-        },
-        sensitivity: .0001
+            })
+          },
+          sensitivity: .0001
+        });
+        map.spin(false);
       });
-      map.spin(false);
-    });
 
-    var geoSearch = new GeoSearch.GeoSearchControl({
-      provider: new GeoSearch.OpenStreetMapProvider(),
-      style: 'button',
-      autoComplete: true,
-      autoCompleteDelay: 250,
-      autoClose: true,
-      position: "topleft"
-    }).addTo(map);
+      var geoSearch = new GeoSearch.GeoSearchControl({
+        provider: new GeoSearch.OpenStreetMapProvider(),
+        style: 'button',
+        autoComplete: true,
+        autoCompleteDelay: 250,
+        autoClose: true,
+        position: "topleft"
+      }).addTo(map);
 
-    var legend = L.control({ position: 'bottomright' });
+      var legend = L.control({ position: 'bottomright' });
 
-    legend.onAdd = function (map) {
-      var div = L.DomUtil.create('div', 'info legend');
-      div.innerHTML += "<h4>Trend (m / year)</h4>"
-      for (var i = -3; i <= 3; i++) {
-        var prefix = ""
-        if (i == -3) {
-          prefix = "≤ "
-        } else if (i == 3) {
-          prefix = "≥ "
+      legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend');
+        div.innerHTML += "<h4>Trend (m / year)</h4>"
+        for (var i = -3; i <= 3; i++) {
+          var prefix = ""
+          if (i == -3) {
+            prefix = "≤ "
+          } else if (i == 3) {
+            prefix = "≥ "
+          }
+          div.innerHTML += `<i style="background:${cmap(i).css()}"></i>${prefix + i}<br>`
         }
-        div.innerHTML += `<i style="background:${cmap(i).css()}"></i>${prefix + i}<br>`
-      }
-      div.innerHTML += `<i style="background:black"></i>Uncertain<br>`
-      return div;
-    };
+        div.innerHTML += `<i style="background:black"></i>Uncertain<br>`
+        return div;
+      };
 
-    legend.addTo(map);
-  </script>
+      legend.addTo(map);
+    </script>
 </body>
 
 </html>
