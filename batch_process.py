@@ -17,7 +17,7 @@ from tqdm.contrib.concurrent import process_map
 
 start = time.time()
 
-CRS = 2193
+CRS = 3003
 
 # Earth engine service account
 service_account = 'service-account@iron-dynamics-294100.iam.gserviceaccount.com'
@@ -28,12 +28,12 @@ print(f"{time.time() - start}: Logged into EE")
 
 # These polygon bounding boxes define where to download imagery
 poly = gpd.read_file("polygons.geojson")
-poly = poly[poly.id.str.startswith("nzd")]
+poly = poly[poly.id.str.startswith("sar")]
 poly.set_index("id", inplace=True)
 
 # These are reference shorelines
 shorelines = gpd.read_file("shorelines.geojson")
-shorelines = shorelines[shorelines.id.str.startswith("nzd")].to_crs(CRS)
+shorelines = shorelines[shorelines.id.str.startswith("sar")].to_crs(CRS)
 shorelines.set_index("id", inplace=True)
 
 # Transects, origin is landward
@@ -52,7 +52,7 @@ def process_site(sitename):
         min_date = str(df.dates.max().date() + timedelta(days=1))
     except FileNotFoundError:
         df = pd.DataFrame()
-        min_date = '1984-01-01'
+        min_date = '1900-01-01'
 
     inputs = {
         "polygon": list(poly.geometry[sitename].exterior.coords),
@@ -98,7 +98,8 @@ def process_site(sitename):
     ref_sl = np.array(line_merge(split(shorelines.geometry[sitename], transects_at_site.unary_union)).coords)
 
     settings["max_dist_ref"] = 300
-    settings["reference_shoreline"] = np.flip(ref_sl)
+    settings["reference_shoreline"] = ref_sl
+    #settings["reference_shoreline"] = np.flip(ref_sl)
 
     output = SDS_shoreline.extract_shorelines(metadata, settings)
     print(f"Have {len(output['shorelines'])} new shorelines for {sitename}")
@@ -106,7 +107,7 @@ def process_site(sitename):
         return
 
     # Have to flip to get x,y?
-    output['shorelines'] = [np.flip(s) for s in output['shorelines']]
+    #output['shorelines'] = [np.flip(s) for s in output['shorelines']]
 
     output = SDS_tools.remove_duplicates(output) # removes duplicates (images taken on the same date by the same satellite)
     output = SDS_tools.remove_inaccurate_georef(output, 10) # remove inaccurate georeferencing (set threshold to 10 m)
