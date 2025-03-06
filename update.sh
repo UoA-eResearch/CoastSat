@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 git pull
 ./batch_process.py || (echo "Batch process failed" && exit 1)
 # For new sites, first we need to run tidal_correction to fetch the tides, then we can run slope_estimation, then we can use the slopes to apply the tidal correction
