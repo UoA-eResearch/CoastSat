@@ -214,7 +214,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
           data: geojson,
           color: function (index, feature) {
             if (feature.properties.n_points_nonan < 10) {
-              return { r: 0, g: 0, b: 0 }
+              return { r: 0.729, g: 0.729, b: 0.729 }
             }
             var c = cmap(feature.properties.trend).gl()
             return { r: c[0], g: c[1], b: c[2] };
@@ -344,7 +344,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
           }
           div.innerHTML += `<i style="background:${cmap(i).css()}"></i>${prefix + i}<br>`
         }
-        div.innerHTML += `<i style="background:black"></i>Uncertain<br>`
+        div.innerHTML += `<i style="background:#BABABA"></i>Uncertain<br>`
         return div;
       };
 
