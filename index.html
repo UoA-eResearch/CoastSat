@@ -235,7 +235,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
               download_url = url
             }
             const urlParams = new URLSearchParams(window.location.search);
-            const debug = urlParams.has('debug') && p.site_id.startsWith("nzd");
+            const debug = urlParams.has('debug')// && p.site_id.startsWith("nzd");
 
             window.popup = L.popup({ minWidth: 800 })
               .setContent(`<b>${p.id}</b><br>
