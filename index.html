@@ -228,7 +228,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
               var url = `data/${p.site_id}/transect_time_series_tidally_corrected.csv`
               var download_url = `data/${p.site_id}/${p.site_id}.xlsx`
             } else if (p.site_id.startsWith("sar")) {
-              var url = `data/${p.site_id}/transect_time_series.csv`
+              var url = `data/${p.site_id}/transect_time_series_despiked.csv`
               download_url = url
             } else {
               var url = `shoreline_data_run6/${p.site_id}/time_series_tidally_corrected.csv`
