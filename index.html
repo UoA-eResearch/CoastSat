@@ -189,27 +189,41 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
         drawHandler();
       });
 
-      var overlayMaps = {
-        "Drawn items": drawnItems
+      var overlays = {
+        "Drawn items": drawnItems,
+        "Non erodibility": L.layerGroup(),
+        "Low erodibility": L.layerGroup(),
+        "Medium erodibility": L.layerGroup().addTo(map),
+        "High erodibility": L.layerGroup().addTo(map)
       }
 
-      L.control.layers(baseMaps, overlayMaps, { position: "topleft" }).addTo(map);
+      L.control.layers(baseMaps, overlays, { position: "topleft" }).addTo(map);
+
+      var layers = [null, "Medium", "High"]
+      map.on("overlayadd", function (e) {
+        if (!window.data) return;
+        layers.push(e.name.replace(" erodibility", ""));
+        console.log(layers)
+        var filtered_data = window.data.features.filter(f => layers.includes(f.properties.ERODIBILITY))
+        console.log(filtered_data)
+        plotData({ type: "FeatureCollection", features: filtered_data })
+      }).on("overlayremove", function (e) {
+        if (!window.data) return;
+        var name = e.name.replace(" erodibility", "")
+        if (layers.indexOf(name) !== -1) {
+          layers.splice(layers.indexOf(name), 1);
+          console.log(layers)
+          var filtered_data = window.data.features.filter(f => layers.includes(f.properties.ERODIBILITY))
+          console.log(filtered_data)
+          plotData({ type: "FeatureCollection", features: filtered_data })
+        }
+      });
 
       var cmap = chroma.scale('RdYlBu').domain([-3, 3])
 
-      map.spin(true);
-      $.getJSON("transects_extended.geojson", function (geojson) {
-        console.log(geojson)
-        const hidden = ["nzd0285", "nzd0284", "nzd0282"]
-        geojson.features = geojson.features.filter(f => !hidden.includes(f.properties.site_id))
-        console.log(geojson)
-        for (var f of geojson.features) {
-          for (var c of f.geometry.coordinates) {
-            if (c[0] < 0) c[0] += 360
-          }
-        }
-        L.glify.longitudeFirst()
-        L.glify.lines({
+      function plotData(geojson) {
+        if (window.linesLayer) window.linesLayer.remove()
+        window.linesLayer = L.glify.lines({
           map: map,
           data: geojson,
           color: function (index, feature) {
@@ -321,6 +335,24 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
           },
           sensitivity: .0001
         });
+      }
+
+      map.spin(true);
+      $.getJSON("transects_extended.geojson", function (geojson) {
+        console.log(geojson)
+        const hidden = ["nzd0285", "nzd0284", "nzd0282"]
+        geojson.features = geojson.features.filter(f => !hidden.includes(f.properties.site_id))
+        console.log(geojson)
+        for (var f of geojson.features) {
+          for (var c of f.geometry.coordinates) {
+            if (c[0] < 0) c[0] += 360
+          }
+        }
+        window.data = geojson
+        L.glify.longitudeFirst()
+        var filtered_data = window.data.features.filter(f => layers.includes(f.properties.ERODIBILITY))
+        console.log(filtered_data)
+        plotData({ type: "FeatureCollection", features: filtered_data })
         map.spin(false);
       });
 
