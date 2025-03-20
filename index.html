@@ -221,6 +221,10 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
 
       var cmap = chroma.scale('RdYlBu').domain([-3, 3])
 
+      const urlParams = new URLSearchParams(window.location.search);
+      const debug = urlParams.has('debug')
+      const sardinia = urlParams.has('sardinia')
+
       function plotData(geojson) {
         if (window.linesLayer) window.linesLayer.remove()
         window.linesLayer = L.glify.lines({
@@ -248,8 +252,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
               var url = `shoreline_data_run6/${p.site_id}/time_series_tidally_corrected.csv`
               download_url = url
             }
-            const urlParams = new URLSearchParams(window.location.search);
-            const debug = urlParams.has('debug')// && p.site_id.startsWith("nzd");
+
 
             window.popup = L.popup({ minWidth: 800 })
               .setContent(`<b>${p.id}</b><br>
@@ -342,6 +345,9 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
         console.log(geojson)
         const hidden = ["nzd0285", "nzd0284", "nzd0282"]
         geojson.features = geojson.features.filter(f => !hidden.includes(f.properties.site_id))
+        if (!sardinia) {
+          geojson.features = geojson.features.filter(f => !f.properties.site_id.startsWith("sar"))
+        }
         console.log(geojson)
         for (var f of geojson.features) {
           for (var c of f.geometry.coordinates) {

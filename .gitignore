@@ -6,6 +6,7 @@ shoreline_data.zip
 .private-key.json
 *.log
 __pycache__/
+animations
 
 # Allow
 !data/*/*.csv
