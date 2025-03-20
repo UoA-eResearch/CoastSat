@@ -343,7 +343,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
       map.spin(true);
       $.getJSON("transects_extended.geojson", function (geojson) {
         console.log(geojson)
-        const hidden = ["nzd0285", "nzd0284", "nzd0282", "sar0001", "sar0002", "sar1220", "sar1221", "sar1362", "sar1363", "sar1364", "sar1365", "sar1368", "sar1369", "sar1370"]
+        const hidden = ["nzd0285", "nzd0284", "nzd0282", "sar0001", "sar0002", "sar1220", "sar1221", "sar1362", "sar1363", "sar1364", "sar1365", "sar1368", "sar1369", "sar1370", "sar2174", "sar2175", "sar2177", "sar2179",]
         geojson.features = geojson.features.filter(f => !hidden.includes(f.properties.site_id))
         if (!sardinia) {
           geojson.features = geojson.features.filter(f => !f.properties.site_id.startsWith("sar"))
