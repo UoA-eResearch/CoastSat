@@ -11,6 +11,7 @@
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
   <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/hayeswise/Leaflet.PointInPolygon@v1.0.0/wise-leaflet-pip.js"></script>
   <script src="https://unpkg.com/leaflet.glify@3.3.0/dist/glify-browser.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
   <script src="https://unpkg.com/leaflet-spin@1.1.0/leaflet.spin.min.js"></script>
@@ -158,8 +159,8 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
               color: '#f357a1',
             }
           },
-          polygon: false,
-          rectangle: false,
+          polygon: true,
+          rectangle: true,
           marker: false,
           circlemarker: false,
           circle: false
@@ -181,6 +182,24 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
 
       map.on(L.Draw.Event.CREATED, function (e) {
         console.log("created", e)
+        var layer;
+        if (e.layers) {
+          e.layers.eachLayer(function (l) {
+            layer = l;
+            return false;
+          });
+        } else if (e.layer) {
+          layer = e.layer;
+        }
+        console.log(layer);
+        // get all intersecting transects
+        var intersecting = window.data.features.filter(f => {
+          return layer.contains(L.latLng(f.geometry.coordinates[0][1], f.geometry.coordinates[0][0])) || layer.contains(L.latLng(f.geometry.coordinates[1][1], f.geometry.coordinates[1][0]))
+        })
+        var site_ids = new Set(intersecting.map(f => `"${f.properties.site_id}"`))
+        console.log(site_ids)
+        layer.bindPopup([...site_ids].join(", "), { permanent: true, direction: "center" }).openPopup();
+
         e.layer.addTo(drawnItems)
         drawHandler();
       });
@@ -343,7 +362,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
       map.spin(true);
       $.getJSON("transects_extended.geojson", function (geojson) {
         console.log(geojson)
-        const hidden = ["nzd0285", "nzd0284", "nzd0282", "sar0001", "sar0002", "sar1220", "sar1221", "sar1362", "sar1363", "sar1364", "sar1365", "sar1368", "sar1369", "sar1370", "sar2174", "sar2175", "sar2177", "sar2179",]
+        const hidden = ['nzd0282', 'nzd0284', 'nzd0285', 'sar0001', 'sar0002', 'sar0854', 'sar0855', 'sar0856', 'sar0857', 'sar0858', 'sar0859', 'sar0860', 'sar0861', 'sar0863', 'sar0864', 'sar0865', 'sar0866', 'sar0867', 'sar0868', 'sar0869', 'sar0870', 'sar0871', 'sar0872', 'sar0873', 'sar0874', 'sar0875', 'sar0876', 'sar0877', 'sar0878', 'sar0879', 'sar0880', 'sar0881', 'sar0882', 'sar0883', 'sar0884', 'sar0885', 'sar0886', 'sar0887', 'sar0888', 'sar0889', 'sar0890', 'sar0891', 'sar0892', 'sar0893', 'sar0894', 'sar0895', 'sar0896', 'sar0897', 'sar0898', 'sar0899', 'sar0900', 'sar0901', 'sar0902', 'sar0903', 'sar0904', 'sar0905', 'sar0906', 'sar0907', 'sar0908', 'sar0909', 'sar0910', 'sar0911', 'sar0912', 'sar0913', 'sar0914', 'sar0915', 'sar0916', 'sar0917', 'sar0918', 'sar0919', 'sar1047', 'sar1048', 'sar1049', 'sar1050', 'sar1051', 'sar1052', 'sar1053', 'sar1054', 'sar1056', 'sar1057', 'sar1058', 'sar1059', 'sar1060', 'sar1061', 'sar1062', 'sar1063', 'sar1064', 'sar1067', 'sar1220', 'sar1221', 'sar1362', 'sar1363', 'sar1364', 'sar1365', 'sar1368', 'sar1369', 'sar1370', 'sar1378', 'sar1379', 'sar1383', 'sar2174', 'sar2175', 'sar2177', 'sar2179']
         geojson.features = geojson.features.filter(f => !hidden.includes(f.properties.site_id))
         if (!sardinia) {
           geojson.features = geojson.features.filter(f => !f.properties.site_id.startsWith("sar"))
