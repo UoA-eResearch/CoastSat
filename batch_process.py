@@ -46,13 +46,17 @@ def process_site(sitename):
     print(f"Now processing {sitename}")
 
     try:
-        df = pd.read_csv(f"data/{sitename}/transect_time_series.csv")
+        #df = pd.read_csv(f"data/{sitename}/transect_time_series.csv")
         #df.set_index("Unnamed: 0", inplace=True)
-        df.dates = pd.to_datetime(df.dates)
-        min_date = str(df.dates.max().date() + timedelta(days=1))
+        #df.dates = pd.to_datetime(df.dates)
+        #min_date = str(df.dates.max().date() + timedelta(days=1))
+        pass
     except FileNotFoundError:
         df = pd.DataFrame()
         min_date = '1900-01-01'
+
+    df = pd.DataFrame()
+    min_date = '1900-01-01'
 
     inputs = {
         "polygon": list(poly.geometry[sitename].exterior.coords),
@@ -63,8 +67,8 @@ def process_site(sitename):
         "landsat_collection": 'C02',
     }
     #result = SDS_download.check_images_available(inputs)
-    metadata = SDS_download.retrieve_images(inputs)
-    #metadata = SDS_download.get_metadata(inputs)
+    #metadata = SDS_download.retrieve_images(inputs)
+    metadata = SDS_download.get_metadata(inputs)
 
     # settings for the shoreline extraction
     settings = {
@@ -110,7 +114,7 @@ def process_site(sitename):
     #output['shorelines'] = [np.flip(s) for s in output['shorelines']]
 
     output = SDS_tools.remove_duplicates(output) # removes duplicates (images taken on the same date by the same satellite)
-    output = SDS_tools.remove_inaccurate_georef(output, 10) # remove inaccurate georeferencing (set threshold to 10 m)
+    output = SDS_tools.remove_inaccurate_georef(output, 15) # remove inaccurate georeferencing (set threshold to 15 m)
 
     settings_transects = { # parameters for computing intersections
                           'along_dist':          25,        # along-shore distance to use for computing the intersection
@@ -121,7 +125,7 @@ def process_site(sitename):
                           'multiple_inter':      'auto',    # mode for removing outliers ('auto', 'nan', 'max')
                           'auto_prc':            0.1,       # percentage of the time that multiple intersects are present to use the max
                         }
-    cross_distance = SDS_transects.compute_intersection_QC(output, transects, settings_transects) 
+    cross_distance = SDS_transects.compute_intersection_QC(output, transects, settings_transects)
 
     # save a .csv file for Excel users
     out_dict = dict([])
