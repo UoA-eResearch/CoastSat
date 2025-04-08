@@ -247,7 +247,16 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
       const sardinia = urlParams.has('sardinia')
 
       function plotData(geojson) {
-        if (window.linesLayer) window.linesLayer.remove()
+        if (window.linesLayer) {
+          window.linesLayer.remove()
+          window.pointsLayer.remove()
+        }
+        window.pointsLayer = L.glify.points({
+          map: map,
+          data: geojson.features.map(f => [f.geometry.coordinates[0][0], f.geometry.coordinates[0][1]]),
+          size: 20,
+          color: {r: .5, g: .5, b: .5},
+        })
         window.linesLayer = L.glify.lines({
           map: map,
           data: geojson,
