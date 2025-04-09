@@ -192,15 +192,19 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
           layer = e.layer;
         }
         console.log(layer);
-        // get all intersecting transects
-        var intersecting = window.data.features.filter(f => {
-          return layer.contains(L.latLng(f.geometry.coordinates[0][1], f.geometry.coordinates[0][0])) || layer.contains(L.latLng(f.geometry.coordinates[1][1], f.geometry.coordinates[1][0]))
-        })
-        var site_ids = new Set(intersecting.map(f => `"${f.properties.site_id}"`))
-        var ids = intersecting.map(f => `"${f.properties.id}"`)
-        console.log(site_ids)
-        layer.bindPopup([...site_ids].join(", ") + "<br>" + [...ids].join(", "), { permanent: true, direction: "center" }).openPopup();
-
+        if (e.layerType == "polyline") {
+          console.log(layer.toGeoJSON())
+          layer.bindPopup(JSON.stringify(layer.toGeoJSON()))
+        } else {
+          // get all intersecting transects
+          var intersecting = window.data.features.filter(f => {
+            return layer.contains(L.latLng(f.geometry.coordinates[0][1], f.geometry.coordinates[0][0])) || layer.contains(L.latLng(f.geometry.coordinates[1][1], f.geometry.coordinates[1][0]))
+          })
+          var site_ids = new Set(intersecting.map(f => `"${f.properties.site_id}"`))
+          var ids = intersecting.map(f => `"${f.properties.id}"`)
+          console.log(site_ids)
+          layer.bindPopup([...site_ids].join(", ") + "<br>" + [...ids].join(", "), { permanent: true, direction: "center" }).openPopup();
+        }
         e.layer.addTo(drawnItems)
         drawHandler();
       });
