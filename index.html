@@ -276,17 +276,18 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
             if (window.popup) map.closePopup(window.popup)
             var p = feature.properties
             var g = feature.geometry.coordinates
+            var download = ""
             if (p.site_id.startsWith("nzd")) {
               var url = `data/${p.site_id}/transect_time_series_tidally_corrected.csv`
-              var download_url = `data/${p.site_id}/${p.site_id}.xlsx`
+              download = `<a href="data/${p.site_id}/${p.site_id}.xlsx" target="_blank" class="link">Download time series for ${p.site_id}</a><br>`
             } else if (p.site_id.startsWith("sar")) {
-              var url = `data/${p.site_id}/transect_time_series_despiked.csv`
-              download_url = url
+              var url = `data/${p.site_id}/transect_time_series_smoothed.csv`
+              download = `<a href="data/${p.site_id}/transect_time_series_despiked.csv" target="_blank" class="link">Download raw time series for ${p.site_id}</a><br>
+                <a href="${url}" target="_blank" class="link">Download smoothed time series for ${p.site_id}</a><br>`
             } else {
               var url = `shoreline_data_run6/${p.site_id}/time_series_tidally_corrected.csv`
-              download_url = url
+              download = `<a href="${url}" target="_blank" class="link">Download time series for ${p.site_id}</a><br>`
             }
-
 
             window.popup = L.popup({ minWidth: 800 })
               .setContent(`<b>${p.id}</b><br>
@@ -304,7 +305,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
               mse: ${p.mse?.toFixed(2)}<br>
               rmse: ${p.rmse?.toFixed(2)}<br>
               site: ${p.site_id}<br>
-              <a href="${download_url}" target="_blank" class="link">Download time series for ${p.site_id}</a><br>
+              ${download}
               ${debug ? `<img id="img" style='height: 100%; width: 100%; object-fit: contain'>` : ""}
               <div id="plot"></div>
             `)
