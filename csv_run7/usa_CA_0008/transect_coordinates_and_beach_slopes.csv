@@ -1,0 +1,3 @@
+,Transect id,Longitude - Origin,Latitude - Origin,Longitude - Seawards point,Latitude - Seawards point,Beach face slope,Lower bound,Upper bound
+0,usa_CA_0008-0000,-117.27723738763402,32.84396085143244,-117.28136833533515,32.84481052665053,,,
+1,usa_CA_0008-0001,-117.27695930872473,32.84483579460473,-117.281090299556,32.84568547797891,0.075,0.0685,0.0837

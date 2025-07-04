@@ -1,8 +1,6 @@
 # Ignore
 .vscode
 data/*/*
-shoreline_data_run6
-shoreline_data.zip
 .private-key.json
 *.log
 __pycache__/
