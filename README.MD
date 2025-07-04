@@ -14,7 +14,7 @@ Additionally, I've configured a cron job:
 
 ```bash
 # m h  dom mon dow   command
-  0 0  1   *   *     cd CoastSat && ./update.sh > update.log
+  0 0  1   *   *     cd CoastSat && ./update.sh &> update.log
 ```
 
 On the above mentioned NeCTAR VM, which should, on the 1st of every month:
