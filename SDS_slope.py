@@ -16,6 +16,7 @@ import geopandas as gpd
 import pytz
 from shapely import geometry
 import pdb
+import pyfes
 
 # plotting params
 plt.style.use('default')
@@ -494,10 +495,18 @@ def compute_tide(coords,date_range,time_step,ocean_tide,load_tide):
     lons = coords[0]*np.ones(len(dates))
     lats = coords[1]*np.ones(len(dates))
     # compute heights for ocean tide and loadings
-    ocean_short, ocean_long, min_points = ocean_tide.calculate(lons, lats, dates_np)
-    load_short, load_long, min_points = load_tide.calculate(lons, lats, dates_np)
+    tide, lp, _ = pyfes.evaluate_tide(ocean_tide,
+                                  dates_np,
+                                  lons,
+                                  lats,
+                                  num_threads=0)
+    load, load_lp, _ = pyfes.evaluate_tide(load_tide,
+                                        dates_np,
+                                        lons,
+                                        lats,
+                                        num_threads=0)
     # sum up all components and convert from cm to m
-    tide_level = (ocean_short + ocean_long + load_short + load_long)/100
+    tide_level = (tide + lp + load + load_lp)/100
 
     return dates, tide_level
 
@@ -509,10 +518,18 @@ def compute_tide_dates(coords,dates,ocean_tide,load_tide):
     lons = coords[0]*np.ones(len(dates))
     lats = coords[1]*np.ones(len(dates))
     # compute heights for ocean tide and loadings
-    ocean_short, ocean_long, min_points = ocean_tide.calculate(lons, lats, dates_np)
-    load_short, load_long, min_points = load_tide.calculate(lons, lats, dates_np)
+    tide, lp, _ = pyfes.evaluate_tide(ocean_tide,
+                                  dates_np,
+                                  lons,
+                                  lats,
+                                  num_threads=0)
+    load, load_lp, _ = pyfes.evaluate_tide(load_tide,
+                                        dates_np,
+                                        lons,
+                                        lats,
+                                        num_threads=0)
     # sum up all components and convert from cm to m
-    tide_level = (ocean_short + ocean_long + load_short + load_long)/100
+    tide_level = (tide + lp + load + load_lp)/100
 
     return tide_level
 
@@ -569,11 +586,11 @@ def power_spectrum(t,y,freqs,idx_cut):
     model = LombScargle(t, y, dy=None, fit_mean=True, center_data=True, nterms=1, normalization='psd')
     ps = model.power(freqs)
     # integrate the entire power spectrum
-    E = sintegrate.simps(ps, x=freqs, even='avg')
+    E = sintegrate.simpson(ps, x=freqs)
     if len(idx_cut) == 0:
         idx_cut = np.ones(freqs.size).astype(bool)
     # integrate only frequencies above cut-off
-    Ec = sintegrate.simps(ps[idx_cut], x=freqs[idx_cut], even='avg')
+    Ec = sintegrate.simpson(ps[idx_cut], x=freqs[idx_cut])
     return ps, E, Ec
 
 ###################################################################################################
@@ -675,7 +692,7 @@ def integrate_power_spectrum(dates_rand,tsall,settings):
     E = np.zeros(beach_slopes.size)
     for i in range(len(tsall)):
         ps, _, _ = power_spectrum(t,tsall[i],freqs,[])
-        E[i] = sintegrate.simps(ps[idx_interval], x=freqs[idx_interval], even='avg')
+        E[i] = sintegrate.simpson(ps[idx_interval], x=freqs[idx_interval])
     # calculate confidence interval
     delta = 0.0001
     prc = settings['prc_conf']

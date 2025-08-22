@@ -6,6 +6,8 @@ data/*/*
 __pycache__/
 animations
 .env
+*_cache/
+fes2022b
 
 # Allow
 !data/*/*.csv
