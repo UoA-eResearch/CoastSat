@@ -285,7 +285,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
               download = `<a href="data/${p.site_id}/transect_time_series_despiked.csv" target="_blank" class="link">Download raw time series for ${p.site_id}</a><br>
                 <a href="${url}" target="_blank" class="link">Download smoothed time series for ${p.site_id}</a><br>`
             } else if (p.site_id.startsWith("ber")) {
-              var url = `data/${p.site_id}/transect_time_series_tidally_corrected.csv`
+              var url = `data/${p.site_id}/transect_time_series_tidally_corrected_smoothed.csv`
               download = `<a href="${url}" target="_blank" class="link">Download time series for ${p.site_id}</a><br>`
             } else {
               var url = `csv_run7/${p.site_id}/time_series_tidally_corrected.csv`
