@@ -8,7 +8,7 @@ Installation: `pip install -r requirements.txt`
 
 Everything in New Zealand and Sardinia was calculated by me ([@neon-ninja](https://github.com/neon-ninja)) using [CoastSat](https://github.com/kvos/CoastSat), everything else was calculated by [@kvos](https://github.com/kvos) and downloaded from this Zenodo link: https://zenodo.org/records/15614554 (v1.6). I used `batch_process_NZ.py` to automate CoastSat, as well as run multiple sites in parallel. This file uses a Google Earth Engine service account to download satellite imagery, to allow for automated processing. I used the [NIWA Tide API](https://developer.niwa.co.nz/docs/tide-api/1/overview) for tidal corrections. See `tidal_correction.ipynb` for specifics.
 
-New Zealand results were calculated on the `wave.storm-surge.cloud.edu.au` NeCTAR VM (32 CPUs, 128GB RAM). The total size of the data folder is 1.3TB. The `.gitignore` is used to only track the *.csv results within this data folder with git, everything else in the data folder is gitignored.
+New Zealand results were calculated on the `wave.storm-surge.cloud.edu.au` NeCTAR VM (32 CPUs, 128GB RAM). The total size of the data folder is 2TB. The `.gitignore` is used to only track the *.csv results within this data folder with git, everything else in the data folder is gitignored.
 
 Additionally, I've configured a cron job:
 
