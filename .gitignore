@@ -8,6 +8,7 @@ animations
 .env
 *_cache/
 fes2022b
+nohup.out
 
 # Allow
 !data/*/*.csv
