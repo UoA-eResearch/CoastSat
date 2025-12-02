@@ -21,7 +21,7 @@ transects_2193 = transects.to_crs(2193)
 
 def process_site(site_id):
   with pd.ExcelWriter(f'data/{site_id}/{site_id}.xlsx') as writer:
-    intersects = pd.read_csv(f"data/{site_id}/transect_time_series_tidally_corrected.csv")
+    intersects = pd.read_csv(f"data/{site_id}/transect_time_series_tidally_corrected_smoothed.csv")
     intersects.set_index("dates", inplace=True)
     intersects.to_excel(writer, sheet_name="Intersects")
     tides = pd.read_csv(f"data/{site_id}/tides.csv")
