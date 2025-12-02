@@ -142,6 +142,9 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
         "CartoDB Positron": L.tileLayer.provider('CartoDB.Positron'),
         "CartoDB Dark Matter": L.tileLayer.provider("CartoDB.DarkMatter"),
         "ESRI WorldImagery": L.tileLayer.provider("Esri.WorldImagery").addTo(map),
+        "LINZ Basemap": L.tileLayer("https://basemaps.linz.govt.nz/v1/tiles/aerial/EPSG:3857/{z}/{x}/{y}.webp?api=d01eyvkkr9erajj4zpeqykezbgn", {
+            attribution: 'Aerial imagery &copy; <a href="//www.linz.govt.nz/data/linz-data/linz-basemaps/data-attribution">LINZ</a>'
+        }),
         "Google Hybrid": L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
           maxZoom: 20,
           subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
