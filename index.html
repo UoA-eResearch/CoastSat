@@ -82,7 +82,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
     }
     #search-container {
       position: absolute;
-      top: 10px; left: 10px;
+      top: 350px; left: 10px;
       z-index: 1000;
       background: white;
       padding: 6px;
@@ -112,7 +112,7 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
 <body>
   <div id="map"></div>
   <div id="search-container">
-    <input id="search-box" type="text" placeholder="Search features or OSM…" autocomplete="off" />
+    <input id="search-box" type="text" placeholder="Search transects or a place" autocomplete="off" />
     <div id="autocomplete-list"></div>
   </div>
   <div id="sidebar" class="leaflet-sidebar collapsed">
@@ -411,82 +411,58 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
       }
 
       function setupAutocomplete(geojson) {
-        // ------------------ Autocomplete UI ------------------
         const searchBox = document.getElementById("search-box");
         const autoList = document.getElementById("autocomplete-list");
-
-        function updateAutocomplete() {
-          const q = searchBox.value.trim().toLowerCase();
-          autoList.innerHTML = "";
-
-          if (!q) {
-            autoList.style.display = "none";
-            return;
-          }
-
-          const matches = geojson.features.filter(f =>
-            f.properties.id.includes(q)
-          );
-
-          matches.forEach(m => {
-            const div = document.createElement("div");
-            div.className = "autocomplete-item";
-            div.textContent = m.name;
-            div.onclick = () => selectFeature(m);
-            autoList.appendChild(div);
-          });
-
-          autoList.style.display = matches.length ? "block" : "none";
-        }
-
-        searchBox.addEventListener("input", updateAutocomplete);
-
-        // ------------------ Feature Selection ------------------
-        function selectFeature(feature) {
-          autoList.style.display = "none";
-          searchBox.value = feature.name;
-
-          map.setView(feature.coords, 17);
-
-          L.marker(feature.coords)
-            .addTo(map)
-            .bindPopup(feature.name)
-            .openPopup();
-        }
-
-        // ------------------ OSM fallback ------------------
+        
         async function searchOSM(query) {
           const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
-          const res = await fetch(url, { headers: { "User-Agent": "Leaflet Search Example" }});
+          const res = await fetch(url);
           return res.json();
         }
 
-        searchBox.addEventListener("keydown", async (e) => {
-          if (e.key != "Enter") {
-            const q = searchBox.value.trim();
-            autoList.style.display = "none";
+        function debounce(fn) {
+          let timer;
+          return function (...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn.apply(this, args), 250);
+          };
+        }
 
-            // First check layer
-            const match = features.find(f =>
-              f.name.toLowerCase() === q.toLowerCase()
-            );
-            if (match) {
-              selectFeature(match);
-              return;
-            }
+        searchBox.addEventListener("input", debounce(async (e) => {
+          const q = searchBox.value.trim();
 
-            // Fallback to OSM
-            const results = await searchOSM(q);
-            if (results.length > 0) {
-              const r = results[0];
-              const latlng = [parseFloat(r.lat), parseFloat(r.lon)];
-              map.setView(latlng, 16);
-              L.marker(latlng).addTo(map).bindPopup(r.display_name).openPopup();
-            } else {
-              alert("No results found in layer or OSM");
-            }
+          const matches = geojson.features.filter(f =>
+            f.properties.id.toLowerCase().includes(q.toLowerCase())
+          ).splice(0, 10);
+          console.log(matches)
+          if (matches.length > 0) {
+            autoList.innerHTML = "";
+            matches.forEach(m => {
+              const div = document.createElement("div");
+              div.className = "autocomplete-item";
+              div.textContent = m.properties.id;
+              div.onclick = () => map.setView([m.geometry.coordinates[0][1], m.geometry.coordinates[0][0]], 17);
+              autoList.appendChild(div);
+            });
+            autoList.style.display = "block";
+            return;
           }
-        });
+
+          // Fallback to OSM
+          const results = await searchOSM(q);
+          console.log(results)
+          if (results.length > 0) {
+            autoList.innerHTML = "";
+            results.forEach(element => {
+              const div = document.createElement("div");
+              div.className = "autocomplete-item";
+              div.textContent = element.display_name;
+              div.onclick = () => map.setView([element.lat, element.lon], 17);
+              autoList.appendChild(div);
+            });
+            autoList.style.display = "block";
+          }
+        }));
       }
 
       map.spin(true);
