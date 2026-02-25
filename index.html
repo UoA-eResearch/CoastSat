@@ -251,7 +251,8 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
         "Non erodibility": L.layerGroup(),
         "Low erodibility": L.layerGroup(),
         "Medium erodibility": L.layerGroup().addTo(map),
-        "High erodibility": L.layerGroup().addTo(map)
+        "High erodibility": L.layerGroup().addTo(map),
+        "Auckland sea walls": L.layerGroup()//.addTo(map)
       }
 
       L.control.layers(baseMaps, overlays, { position: "topleft" }).addTo(map);
@@ -502,7 +503,21 @@ https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2@3.2.3/css/leaflet-sidebar.min.cs
         map.spin(false);
       });
 
-
+      $.getJSON("aklc_seawalls.geojson", function (geojson) {
+        console.log(geojson)
+        L.geoJSON(geojson, {
+          style: function (feature) {
+            return { color: "magenta", weight: 5, opacity: 0.5 }
+          },
+          onEachFeature: function (feature, layer) {
+            var html = `
+              <h4>${feature.properties["SAPPARK_DATA.SITEDESCRIPTION"]}</h4>
+              <p><strong>Description:</strong> ${feature.properties["SAPPARK_DATA.DESCRIPTION"]}</p>`
+            layer.bindPopup(html);
+            layer.bindTooltip(html);
+          }
+        }).addTo(overlays["Auckland sea walls"])
+      })
 
       var legend = L.control({ position: 'bottomright' });
 
