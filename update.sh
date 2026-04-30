@@ -7,7 +7,7 @@ git pull
 jupyter nbconvert --to notebook --execute --inplace tidal_correction.ipynb slope_estimation.ipynb
 jupyter nbconvert --to notebook --execute --inplace tidal_correction.ipynb linear_models.ipynb
 ./make_xlsx.py
-git add .
+git add data
 git commit -am "auto update" --author="coastsat-bot <ubuntu@wave.storm-surge.cloud.edu.au>"
 git push
 TAG=$(date -u +"%Y-%m-%dT%H-%M-%SZ")
